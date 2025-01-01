@@ -1,25 +1,32 @@
 #include "elevator.h"
+#include "app_info.h"
 #include <iostream>
 #include <SDL3/SDL.h>
 
 #define SDL_MAIN_USE_CALLBACKS
 #include <SDL3/SDL_main.h>
+#include <SDL3/SDL_init.h>
+
+SDL_Window *window;
 
 SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv)
 {
     if (!SDL_Init(SDL_INIT_VIDEO)) {
-        SDL_LogCritical(SDL_LOG_CATEGORY_ASSERT, "SDL failed to init");
+        SDL_LogCritical(SDL_LOG_CATEGORY_ASSERT, "SDL failed to init: %s\n", SDL_GetError());
         return SDL_APP_FAILURE;
     }
-    std::cout << "Hello, world!" << std::endl;
+    SDL_SetAppMetadata("Elevator Simulation", APP_VERSION, "com.example.elevatorsim");
+    window = SDL_CreateWindow("Elevator Simulation", 1280, 720, 0);
+    if (window == nullptr) {
+        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Could not create window: %s\n", SDL_GetError());
+        return SDL_APP_FAILURE;
+    }
     return SDL_APP_CONTINUE;
 }
 
 SDL_AppResult SDL_AppIterate(void *appstate)
 {
-    std::cout << "Running, world!" << std::endl;
-    // return SDL_APP_CONTINUE;
-    return SDL_APP_SUCCESS;
+    return SDL_APP_CONTINUE;
 }
 
 SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event)
@@ -32,6 +39,5 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event)
 
 void SDL_AppQuit(void *appstate, SDL_AppResult result)
 {
-    SDL_Quit();
-    std::cout << "Goodbye, world!" << std::endl;
+    SDL_DestroyWindow(window);
 }

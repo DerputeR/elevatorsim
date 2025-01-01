@@ -1,0 +1,3 @@
+#pragma once
+
+constexpr char *APP_VERSION = "@ElevatorSimProject_VERSION_MAJOR@.@ElevatorSimProject_VERSION_MINOR@.@ElevatorSimProject_VERSION_PATCH@";

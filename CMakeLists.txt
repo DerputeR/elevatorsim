@@ -4,6 +4,8 @@ project(ElevatorSimProject  VERSION 0.1.0
                             DESCRIPTION "Simulates a single-carriage elevator system"
                             LANGUAGES CXX)
 
+configure_file(src/app_info.h.in ${CMAKE_SOURCE_DIR}/src/app_info.h @ONLY)
+
 # * Linking SDL instructions are found in SDL/docs/README-cmake.md
 
 # Create an option to switch between a system sdl library and a vendored SDL library
