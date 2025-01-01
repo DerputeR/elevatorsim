@@ -6,15 +6,16 @@
 # Installation
 
 This project uses CMake to build and install.
-I personally use Ninja as the build system, but it should work fine with Make or other build systems.
 
 ## Windows
+
+I personally use Ninja as the build system and MSVC 2022 x64 as the compiler, but it should work fine with other build systems and compilers.
 
 1. Follow the build instructions for SDL3, found [here](https://github.com/libsdl-org/SDL/blob/main/docs/README-cmake.md).
     - Note that for Windows, installing without a custom prefix requires elevated privileges, since the default install directory for shared libraries is `C:\Program Files (x86)\<library-name>`
     - If you choose to install with a custom prefix, you'll need to run CMake with and add the custom prefix to your `CMAKE_PREFIX_PATH` variable.
         - If using the CMake Tools extension in VSCode, add this variable as a key-value pair to the setting `cmake: environment`
-2. Open a terminal (here, using PowerShell) in the root directory of the repo and run the following: 
+2. Open a terminal (here, using VS Developer PowerShell) in the root directory of the repo and run the following: 
 
     ```Powershell
     mkdir build
@@ -24,7 +25,8 @@ I personally use Ninja as the build system, but it should work fine with Make or
     # If you installed SDL under a differnt prefix, add the `-DCMAKE_PREFIX_PATH=<custom-prefix>` flag to this first cmake command
     cmake --build .
     ```
-3. You should now be able to run `ElevatorSim.exe`
+4. After building SDL, copy the SDL.dll file to the build folder of the project so that it is next to ElevatorSim.exe
+3. You should now be able to run ElevatorSim.exe
 
 ## Linux
 
