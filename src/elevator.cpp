@@ -16,7 +16,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv)
         return SDL_APP_FAILURE;
     }
     SDL_SetAppMetadata("Elevator Simulation", APP_VERSION, "com.example.elevatorsim");
-    window = SDL_CreateWindow("Elevator Simulation", 1280, 720, 0);
+    window = SDL_CreateWindow("Elevator Simulation", 1280, 720, SDL_WINDOW_OPENGL);
     if (window == nullptr) {
         SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Could not create window: %s\n", SDL_GetError());
         return SDL_APP_FAILURE;

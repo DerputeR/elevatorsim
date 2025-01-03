@@ -13,6 +13,7 @@ configure_file(src/app_info.h.in ${CMAKE_SOURCE_DIR}/src/app_info.h @ONLY)
 option(MYGAME_VENDORED "Use vendored libraries" OFF)
 set(CMAKE_PREFIX_PATH "/usr/local" CACHE PATH "Custom prefix paths to search for libraries under")
 
+
 if(MYGAME_VENDORED)
     # This assumes you have added SDL as a submodule in vendored/SDL
     add_subdirectory(vendored/SDL EXCLUDE_FROM_ALL)
@@ -33,3 +34,34 @@ set_target_properties(ElevatorSim PROPERTIES CXX_EXTENSIONS OFF)
 
 
 
+# Other libraries we can just statically link
+
+include(FetchContent)
+FetchContent_Declare(
+    glfw            
+    GIT_REPOSITORY  https://github.com/glfw/glfw
+    GIT_TAG         3.4
+)
+FetchContent_Declare(
+    glm            
+    GIT_REPOSITORY  https://github.com/g-truc/glm
+    GIT_TAG         1.0.1
+)
+
+# TODO: put this in a separate library since we will need to pick and choose backends
+
+FetchContent_Declare(
+    imgui            
+    GIT_REPOSITORY  https://github.com/ocornut/imgui
+    GIT_TAG         v1.91.6-docking
+)
+
+FetchContent_MakeAvailable(glfw)
+FetchContent_MakeAvailable(glm)
+FetchContent_MakeAvailable(imgui)
+
+target_include_directories(ElevatorSim PRIVATE glfw)
+target_include_directories(ElevatorSim PRIVATE glm)
+
+target_link_libraries(ElevatorSim PRIVATE glfw)
+target_link_libraries(ElevatorSim PRIVATE glm)
