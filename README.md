@@ -8,6 +8,7 @@
 # Installation
 
 This project uses CMake to build and install.
+Make sure to run `git submodule update --init --recursive` before building.
 
 ## Windows
 
