@@ -10,13 +10,13 @@ configure_file(src/app_info.h.in ${CMAKE_SOURCE_DIR}/src/app_info.h @ONLY)
 
 # Create an option to switch between a system sdl library and a vendored SDL library
 # If this variable exists in the cache, its value will not be overwritten
-option(MYGAME_VENDORED "Use vendored libraries" OFF)
+option(MYGAME_VENDORED "Use vendored libraries" ON)
 set(CMAKE_PREFIX_PATH "/usr/local" CACHE PATH "Custom prefix paths to search for libraries under")
 
+# TODO: figure out how to copy SDL.dll to the build folder
 
 if(MYGAME_VENDORED)
-    # This assumes you have added SDL as a submodule in vendored/SDL
-    add_subdirectory(vendored/SDL EXCLUDE_FROM_ALL)
+    add_subdirectory(submodules/SDL EXCLUDE_FROM_ALL)
 else()
     # 1. Look for a SDL3 package,
     # 2. look for the SDL3-shared component, and
@@ -48,17 +48,7 @@ FetchContent_Declare(
     GIT_TAG         1.0.1
 )
 
-# TODO: put this in a separate library since we will need to pick and choose backends
-
-FetchContent_Declare(
-    imgui            
-    GIT_REPOSITORY  https://github.com/ocornut/imgui
-    GIT_TAG         v1.91.6-docking
-)
-
-FetchContent_MakeAvailable(glfw)
-FetchContent_MakeAvailable(glm)
-FetchContent_MakeAvailable(imgui)
+FetchContent_MakeAvailable(glfw glm)
 
 target_include_directories(ElevatorSim PRIVATE glfw)
 target_include_directories(ElevatorSim PRIVATE glm)

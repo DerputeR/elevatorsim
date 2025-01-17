@@ -1,6 +1,6 @@
 # Dependencies
 
-- SDL 3.1.6
+- SDL 3.1.6 (git submodule)
 - Dear ImGui 1.91.6-docking (source included)
 - GLFW 3.8 (fetched)
 - GLM 1.0.1 (fetched)
@@ -24,7 +24,7 @@ I personally use Ninja as the build system and MSVC 2022 x64 as the compiler, bu
     cd build
     cmake ..
     # cmake -G Ninja .. # Use this if you want to use Ninja
-    # If you installed SDL under a differnt prefix, add the `-DCMAKE_PREFIX_PATH=<custom-prefix>` flag to this first cmake command
+    # If you installed SDL under a different prefix, add the `-DCMAKE_PREFIX_PATH=<custom-prefix>` flag to this first cmake command
     cmake --build .
     ```
 4. After building SDL, copy the SDL.dll file to the build folder of the project so that it is next to ElevatorSim.exe
