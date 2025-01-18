@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.15...3.31)
+cmake_minimum_required(VERSION 3.21...3.31)
 
 project(ElevatorSimProject  VERSION 0.1.0
                             DESCRIPTION "Simulates a single-carriage elevator system"
@@ -32,6 +32,13 @@ target_link_libraries(ElevatorSim PRIVATE SDL3::SDL3)
 target_compile_features(ElevatorSim PUBLIC cxx_std_17)
 set_target_properties(ElevatorSim PROPERTIES CXX_EXTENSIONS OFF)
 
+# Ensure the library is installed with the executable
+if (TARGET SDL3-shared)
+    install(TARGETS SDL3-shared
+            RUNTIME DESTINATION bin
+            LIBRARY DESTINATION lib
+            ARCHIVE DESTINATION lib/${PROJECT_NAME})
+endif()
 
 
 # Other libraries we can just statically link
@@ -55,3 +62,6 @@ target_include_directories(ElevatorSim PRIVATE glm)
 
 target_link_libraries(ElevatorSim PRIVATE glfw)
 target_link_libraries(ElevatorSim PRIVATE glm)
+
+# Ensure the executable is also placed in bin
+install(TARGETS ElevatorSim RUNTIME DESTINATION bin)
