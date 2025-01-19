@@ -9,9 +9,9 @@ configure_file(src/app_info.h.in ${CMAKE_SOURCE_DIR}/src/app_info.h @ONLY)
 # Dependency management, excluding SDL3 (special case handled below)
 include(FetchContent)
 FetchContent_Declare(
-    glfw            
-    GIT_REPOSITORY  https://github.com/glfw/glfw
-    GIT_TAG         3.4
+    imgui            
+    GIT_REPOSITORY  https://github.com/ocornut/imgui
+    GIT_TAG         v1.91.7-docking
 )
 FetchContent_Declare(
     glm            
@@ -19,10 +19,29 @@ FetchContent_Declare(
     GIT_TAG         1.0.1
 )
 
-FetchContent_MakeAvailable(glfw glm)
+FetchContent_MakeAvailable(imgui glm)
+
+# Dear ImGUI doesn't have its own CMakeLists.txt so we'll have to declare
+# which sources we're using so we can embed it directly into the executable
+set(IMGUI_SOURCES ${imgui_SOURCE_DIR}/imgui.cpp
+                  ${imgui_SOURCE_DIR}/imgui_demo.cpp
+                  ${imgui_SOURCE_DIR}/imgui_draw.cpp
+                  ${imgui_SOURCE_DIR}/imgui_tables.cpp
+                  ${imgui_SOURCE_DIR}/imgui_widgets.cpp
+)
+
+# We will also need to do so for the backend sources
+set(IMGUI_BACKEND_SOURCES ${imgui_SOURCE_DIR}/backends/imgui_impl_sdl3.cpp
+                          ${imgui_SOURCE_DIR}/backends/imgui_impl_opengl3.cpp
+)
 
 
 # * Linking SDL instructions are found in SDL/docs/README-cmake.md
+
+# This makes sure that the dynamic library goes into the build directory automatically.
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIG>")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIG>/lib")
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIG>/lib/${PROJECT_NAME}")
 
 # Create an option to switch between a system sdl library and a vendored SDL library
 # If this variable exists in the cache, its value will not be overwritten
@@ -45,8 +64,13 @@ else()
     FetchContent_MakeAvailable(SDL3)
 endif()
 
-# Create your executable target as usual
-add_executable(ElevatorSim src/elevator.cpp)
+# Create the executable target.
+# Since Dear ImGUI is not being built as a separate static library,
+# we'll need to include the sources here.
+add_executable(ElevatorSim src/elevator.cpp
+                           ${IMGUI_SOURCES}
+                           ${IMGUI_BACKEND_SOURCES}
+)
 
 # Link to the actual SDL3 library.
 target_link_libraries(ElevatorSim PRIVATE SDL3::SDL3)
@@ -56,17 +80,18 @@ set_target_properties(ElevatorSim PROPERTIES CXX_EXTENSIONS OFF)
 # Ensure the library is installed with the executable
 if (TARGET SDL3-shared)
     install(TARGETS SDL3-shared
-            RUNTIME DESTINATION bin
+            RUNTIME DESTINATION 
             LIBRARY DESTINATION lib
             ARCHIVE DESTINATION lib/${PROJECT_NAME})
 endif()
 
 
-# Other libraries we can just statically link
-target_include_directories(ElevatorSim PRIVATE glfw)
+
+# Pick up the includes for our dependencies
+target_include_directories(ElevatorSim PRIVATE ${imgui_SOURCE_DIR})
 target_include_directories(ElevatorSim PRIVATE glm)
 
-target_link_libraries(ElevatorSim PRIVATE glfw)
+# Link to the library (GLM becomes a static library in this case)
 target_link_libraries(ElevatorSim PRIVATE glm)
 
 # Ensure the executable is also placed in bin

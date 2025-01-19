@@ -7,7 +7,7 @@
 #include <SDL3/SDL_main.h>
 #include <SDL3/SDL_init.h>
 
-SDL_Window *window;
+static SDL_Window *window;
 
 SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv)
 {
