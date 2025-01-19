@@ -2,9 +2,9 @@ cmake_minimum_required(VERSION 3.21...3.31)
 
 project(ElevatorSimProject  VERSION 0.1.0
                             DESCRIPTION "Simulates a single-carriage elevator system"
-                            LANGUAGES CXX)
+                            LANGUAGES C CXX)
 
-configure_file(src/app_info.h.in ${CMAKE_SOURCE_DIR}/src/app_info.h @ONLY)
+configure_file("src/app_info.h.in" "${CMAKE_SOURCE_DIR}/src/app_info.h" @ONLY)
 
 # Dependency management, excluding SDL3 (special case handled below)
 include(FetchContent)
@@ -23,16 +23,16 @@ FetchContent_MakeAvailable(imgui glm)
 
 # Dear ImGUI doesn't have its own CMakeLists.txt so we'll have to declare
 # which sources we're using so we can embed it directly into the executable
-set(IMGUI_SOURCES ${imgui_SOURCE_DIR}/imgui.cpp
-                  ${imgui_SOURCE_DIR}/imgui_demo.cpp
-                  ${imgui_SOURCE_DIR}/imgui_draw.cpp
-                  ${imgui_SOURCE_DIR}/imgui_tables.cpp
-                  ${imgui_SOURCE_DIR}/imgui_widgets.cpp
+set(IMGUI_SOURCES "${imgui_SOURCE_DIR}/imgui.cpp"
+                  "${imgui_SOURCE_DIR}/imgui_demo.cpp"
+                  "${imgui_SOURCE_DIR}/imgui_draw.cpp"
+                  "${imgui_SOURCE_DIR}/imgui_tables.cpp"
+                  "${imgui_SOURCE_DIR}/imgui_widgets.cpp"
 )
 
 # We will also need to do so for the backend sources
-set(IMGUI_BACKEND_SOURCES ${imgui_SOURCE_DIR}/backends/imgui_impl_sdl3.cpp
-                          ${imgui_SOURCE_DIR}/backends/imgui_impl_opengl3.cpp
+set(IMGUI_BACKEND_SOURCES "${imgui_SOURCE_DIR}/backends/imgui_impl_sdl3.cpp"
+                          "${imgui_SOURCE_DIR}/backends/imgui_impl_opengl3.cpp"
 )
 
 
@@ -54,7 +54,7 @@ option(SDL_SHARED "Build a SDL shared library (if available)" ON)
 option(SDL_STATIC "Build a SDL static library (if available)" OFF)
 
 if(MYGAME_VENDORED)
-    add_subdirectory(vendored/SDL EXCLUDE_FROM_ALL)
+    add_subdirectory("vendored/SDL" EXCLUDE_FROM_ALL)
 else()
     FetchContent_Declare(
         SDL3
@@ -67,10 +67,17 @@ endif()
 # Create the executable target.
 # Since Dear ImGUI is not being built as a separate static library,
 # we'll need to include the sources here.
-add_executable(ElevatorSim src/elevator.cpp
+add_executable(ElevatorSim "src/elevator.cpp"
+                           "glad/src/glad.c"
                            ${IMGUI_SOURCES}
                            ${IMGUI_BACKEND_SOURCES}
 )
+
+# For debugging
+if (MSVC AND WIN32 AND NOT MSVC_VERSION VERSION_LESS 142)
+    target_link_options(ElevatorSim PRIVATE $<$<CONFIG:Debug>:/INCREMENTAL>)
+    target_compile_options(ElevatorSim PRIVATE $<$<CONFIG:Debug>:/ZI>)
+endif()
 
 # Link to the actual SDL3 library.
 target_link_libraries(ElevatorSim PRIVATE SDL3::SDL3)
@@ -81,18 +88,19 @@ set_target_properties(ElevatorSim PROPERTIES CXX_EXTENSIONS OFF)
 if (TARGET SDL3-shared)
     install(TARGETS SDL3-shared
             RUNTIME DESTINATION 
-            LIBRARY DESTINATION lib
-            ARCHIVE DESTINATION lib/${PROJECT_NAME})
+            LIBRARY DESTINATION "lib"
+            ARCHIVE DESTINATION "lib/${PROJECT_NAME}")
 endif()
 
 
-
 # Pick up the includes for our dependencies
-target_include_directories(ElevatorSim PRIVATE ${imgui_SOURCE_DIR})
-target_include_directories(ElevatorSim PRIVATE glm)
+target_include_directories(ElevatorSim PRIVATE "${sdl3_SOURCE_DIR}/include")
+target_include_directories(ElevatorSim PRIVATE "${imgui_SOURCE_DIR}")
+target_include_directories(ElevatorSim PRIVATE "glm")
+target_include_directories(ElevatorSim PRIVATE "glad/include")
 
 # Link to the library (GLM becomes a static library in this case)
 target_link_libraries(ElevatorSim PRIVATE glm)
 
 # Ensure the executable is also placed in bin
-install(TARGETS ElevatorSim RUNTIME DESTINATION bin)
+install(TARGETS ElevatorSim RUNTIME DESTINATION "bin")
