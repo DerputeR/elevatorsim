@@ -16,7 +16,7 @@ static SDL_GLContext context; // this is actually a pointer
 
 static bool vsync_enabled = true;
 static bool vsync_adaptive = true;
-static int frame_cap = 400;
+static int frame_cap = 120;
 static Uint64 time_ns_last = 0;
 static Uint64 time_ns_now = 0;
 static Uint64 time_ns_delta = 0;
@@ -81,9 +81,9 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char** argv) {
 
 SDL_AppResult SDL_AppIterate(void* appstate) {
     // compute previous frame time
+    time_ns_last = time_ns_now;
     time_ns_now = SDL_GetTicksNS();
     time_ns_delta = time_ns_now - time_ns_last;
-    time_ns_last = time_ns_now;
 
     // clear the buffer
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -102,7 +102,7 @@ SDL_AppResult SDL_AppIterate(void* appstate) {
     // manual framecap when vsync is off
     // fixme: this doesn't work well. capping at 1000 fps is worse than uncapped 1000fps
     if ((!vsync_enabled || (vsync_enabled && vsync_adaptive)) && frame_cap > 0) {
-        Uint64 min_frame_time = 1000000000 / frame_cap;
+        Uint64 min_frame_time = static_cast<Uint64>(1000000000) / static_cast<Uint64>(frame_cap);
         Uint64 frame_time = SDL_GetTicksNS() - time_ns_now;
         if (frame_time < min_frame_time) {
             SDL_DelayPrecise(min_frame_time - frame_time);
