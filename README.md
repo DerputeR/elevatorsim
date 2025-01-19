@@ -32,6 +32,10 @@ From here, you can run `ElevatorSim.exe`.
 
 ### To generate a Visual Studio 17 2022 solution
 
+Modern versions of Visual Studio actually enable direct integration with CMake projects. If you follow steps 1 and 3 from the previous section, you can open the project root directory as a folder in Visual Studio, and the IDE will recognize the project as a CMake project and let you get started right away.
+
+However, if you prefer to work with the older solution-based approach:
+
 1. Follow steps 1 and 3 from the previous section
 2. Open a terminal in the root directory of the project and run the following:
 
