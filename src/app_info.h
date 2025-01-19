@@ -2,4 +2,4 @@
 
 #include <string>
 
-constexpr char *APP_VERSION = "0.1.0";
+const constexpr char *APP_VERSION = "0.1.0";
