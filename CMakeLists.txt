@@ -32,6 +32,7 @@ set(CMAKE_PREFIX_PATH "/usr/local" CACHE PATH "Custom prefix paths to search for
 # GLFW sets the variable BUILD_SHARED_LIBS to false before we hit SDL,
 # so we need to manually enable SDL_SHARED before we aquire SDL
 option(SDL_SHARED "Build a SDL shared library (if available)" ON)
+option(SDL_STATIC "Build a SDL static library (if available)" OFF)
 
 if(MYGAME_VENDORED)
     add_subdirectory(vendored/SDL EXCLUDE_FROM_ALL)
