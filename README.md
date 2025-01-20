@@ -1,8 +1,8 @@
 # Dependencies
 
-- SDL 3.1.6 (fetched)
-- Dear ImGui 1.91.6-docking (source included)
-- GLFW 3.8 (fetched)
+- SDL prerelease-3.1.10 (fetched)
+- Dear ImGui 1.91.7-docking (fetched)
+- glad (included)
 - GLM 1.0.1 (fetched)
 
 # Installation
