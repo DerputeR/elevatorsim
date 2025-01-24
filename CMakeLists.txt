@@ -59,7 +59,7 @@ else()
     FetchContent_Declare(
         SDL3
         GIT_REPOSITORY  https://github.com/libsdl-org/SDL
-        GIT_TAG         prerelease-3.1.10
+        GIT_TAG         release-3.2.0
     )
     FetchContent_MakeAvailable(SDL3)
 endif()
