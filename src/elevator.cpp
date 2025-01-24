@@ -14,53 +14,56 @@
 static SDL_Window* window;
 static SDL_GLContext context; // this is actually a pointer
 
-static bool vsync_enabled = true;
+static bool vsync_enabled = false;
 static bool vsync_adaptive = true;
 static int frame_cap = 120;
 static Uint64 time_ns_last = 0;
 static Uint64 time_ns_now = 0;
 static Uint64 time_ns_delta = 0;
 
+static Uint64 frame_number = 0;
+
 SDL_AppResult SDL_AppInit(void** appstate, int argc, char** argv) {
     SDL_SetAppMetadata("Elevator Simulation", APP_VERSION, "com.example.elevatorsim");
+    SDL_SetLogPriority(SDL_LOG_CATEGORY_VIDEO, SDL_LOG_PRIORITY_DEBUG);
 
     if (!SDL_Init(SDL_INIT_VIDEO)) {
-        SDL_LogCritical(SDL_LOG_CATEGORY_ASSERT, "SDL failed to init: %s\n", SDL_GetError());
+        SDL_LogCritical(SDL_LOG_CATEGORY_ASSERT, "SDL failed to init: %s", SDL_GetError());
         return SDL_APP_FAILURE;
     }
 
     // Window init
     window = SDL_CreateWindow("Elevator Simulation", 1280, 720, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
     if (window == nullptr) {
-        SDL_LogCritical(SDL_LOG_CATEGORY_VIDEO, "Failed to create window: %s\n", SDL_GetError());
+        SDL_LogCritical(SDL_LOG_CATEGORY_VIDEO, "Failed to create window: %s", SDL_GetError());
         return SDL_APP_FAILURE;
     }
 
     // OpenGL context init
     context = SDL_GL_CreateContext(window);
     if (context == nullptr) {
-        SDL_LogCritical(SDL_LOG_CATEGORY_VIDEO, "Failed to create OpenGL context for window: %s\n", SDL_GetError());
+        SDL_LogCritical(SDL_LOG_CATEGORY_VIDEO, "Failed to create OpenGL context for window: %s", SDL_GetError());
         return SDL_APP_FAILURE;
     }
     
     if (vsync_enabled) {
         if (vsync_adaptive) {
             if (!SDL_GL_SetSwapInterval(-1)) {
-                SDL_LogError(SDL_LOG_CATEGORY_VIDEO, "Failed to enable adaptive vsync: %s\n", SDL_GetError());
+                SDL_LogError(SDL_LOG_CATEGORY_VIDEO, "Failed to enable adaptive vsync: %s", SDL_GetError());
                 if (!SDL_GL_SetSwapInterval(1)) {
-                    SDL_LogError(SDL_LOG_CATEGORY_VIDEO, "Failed to enable vsync: %s\n", SDL_GetError());
+                    SDL_LogError(SDL_LOG_CATEGORY_VIDEO, "Failed to enable vsync: %s", SDL_GetError());
                 }
             }
         } else if (!SDL_GL_SetSwapInterval(1)) {
-            SDL_LogError(SDL_LOG_CATEGORY_VIDEO, "Failed to enable vsync: %s\n", SDL_GetError());
+            SDL_LogError(SDL_LOG_CATEGORY_VIDEO, "Failed to enable vsync: %s", SDL_GetError());
         }
     } else if (!SDL_GL_SetSwapInterval(0)) {
-        SDL_LogError(SDL_LOG_CATEGORY_VIDEO, "Failed to disable vsync: %s\n", SDL_GetError());
+        SDL_LogError(SDL_LOG_CATEGORY_VIDEO, "Failed to disable vsync: %s", SDL_GetError());
     }
 
     // GLAD init
     if (!gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress)) {
-        SDL_LogCritical(SDL_LOG_CATEGORY_VIDEO, "Failed to initialize GLAD\n");
+        SDL_LogCritical(SDL_LOG_CATEGORY_VIDEO, "Failed to initialize GLAD");
         return SDL_APP_FAILURE;
     }
     
@@ -84,6 +87,8 @@ SDL_AppResult SDL_AppIterate(void* appstate) {
     time_ns_last = time_ns_now;
     time_ns_now = SDL_GetTicksNS();
     time_ns_delta = time_ns_now - time_ns_last;
+    SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "Frame %d start: %f", frame_number, time_ns_now / 1000000000.0);
+    SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "Last frame (%d) delta: %f", frame_number, time_ns_delta / 1000000000.0);
 
     // clear the buffer
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -103,12 +108,14 @@ SDL_AppResult SDL_AppIterate(void* appstate) {
     // fixme: this doesn't work well. capping at 1000 fps is worse than uncapped 1000fps
     if ((!vsync_enabled || (vsync_enabled && vsync_adaptive)) && frame_cap > 0) {
         Uint64 min_frame_time = static_cast<Uint64>(1000000000) / static_cast<Uint64>(frame_cap);
-        Uint64 frame_time = SDL_GetTicksNS() - time_ns_now;
+        Uint64 frame_end = SDL_GetTicksNS();
+        SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "Frame %d end: %f", frame_number, frame_end / 1000000000.0);
+        Uint64 frame_time = frame_end - time_ns_now;
         if (frame_time < min_frame_time) {
             SDL_DelayPrecise(min_frame_time - frame_time);
         }
     }
-
+    frame_number++;
     return SDL_APP_CONTINUE;
 }
 
