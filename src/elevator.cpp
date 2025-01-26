@@ -1,6 +1,7 @@
 #include "elevator.h"
 #include "app_info.h"
 #include <iostream>
+#include <array>
 
 #include <glad/glad.h>
 #include <SDL3/SDL.h>
@@ -87,8 +88,16 @@ SDL_AppResult SDL_AppIterate(void* appstate) {
     time_ns_last = time_ns_now;
     time_ns_now = SDL_GetTicksNS();
     time_ns_delta = time_ns_now - time_ns_last;
-    SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "Frame %d start: %f", frame_number, time_ns_now / 1000000000.0);
-    SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "Last frame (%d) delta: %f", frame_number, time_ns_delta / 1000000000.0);
+
+    // manual framecap when vsync is off
+    if ((!vsync_enabled || (vsync_enabled && vsync_adaptive)) && frame_cap > 0) {
+        Uint64 min_frame_time = static_cast<Uint64>(1000000000) / static_cast<Uint64>(frame_cap);
+        if (time_ns_delta < min_frame_time) {
+            SDL_DelayPrecise(min_frame_time - time_ns_delta);
+            time_ns_now = SDL_GetTicksNS();
+            time_ns_delta = time_ns_now - time_ns_last;
+        }
+    }
 
     // clear the buffer
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -104,17 +113,6 @@ SDL_AppResult SDL_AppIterate(void* appstate) {
     // display the render
     SDL_GL_SwapWindow(window);
 
-    // manual framecap when vsync is off
-    // fixme: this doesn't work well. capping at 1000 fps is worse than uncapped 1000fps
-    if ((!vsync_enabled || (vsync_enabled && vsync_adaptive)) && frame_cap > 0) {
-        Uint64 min_frame_time = static_cast<Uint64>(1000000000) / static_cast<Uint64>(frame_cap);
-        Uint64 frame_end = SDL_GetTicksNS();
-        SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "Frame %d end: %f", frame_number, frame_end / 1000000000.0);
-        Uint64 frame_time = frame_end - time_ns_now;
-        if (frame_time < min_frame_time) {
-            SDL_DelayPrecise(min_frame_time - frame_time);
-        }
-    }
     frame_number++;
     return SDL_APP_CONTINUE;
 }
