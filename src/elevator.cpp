@@ -12,17 +12,30 @@
 #include <backends/imgui_impl_sdl3.h>
 #include <backends/imgui_impl_opengl3.h>
 
+#include "engine/shader_loader.h"
+
 static SDL_Window* window;
 static SDL_GLContext context; // this is actually a pointer
 
+static const Uint64 ONE_SECOND_NS = 1000000000;
+
 static bool vsync_enabled = false;
 static bool vsync_adaptive = true;
-static int frame_cap = 120;
+static Uint64 min_frame_time = ONE_SECOND_NS / 120;
 static Uint64 time_ns_last = 0;
 static Uint64 time_ns_now = 0;
 static Uint64 time_ns_delta = 0;
 
 static Uint64 frame_number = 0;
+
+static void update_frame_cap(Uint64 frame_cap) {
+    if (frame_cap == 0) {
+        min_frame_time = 0;
+    }
+    else {
+        min_frame_time = ONE_SECOND_NS / frame_cap;
+    }
+}
 
 SDL_AppResult SDL_AppInit(void** appstate, int argc, char** argv) {
     SDL_SetAppMetadata("Elevator Simulation", APP_VERSION, "com.example.elevatorsim");
@@ -90,8 +103,8 @@ SDL_AppResult SDL_AppIterate(void* appstate) {
     time_ns_delta = time_ns_now - time_ns_last;
 
     // manual framecap when vsync is off
-    if ((!vsync_enabled || (vsync_enabled && vsync_adaptive)) && frame_cap > 0) {
-        Uint64 min_frame_time = static_cast<Uint64>(1000000000) / static_cast<Uint64>(frame_cap);
+    if ((!vsync_enabled || (vsync_enabled && vsync_adaptive)) && min_frame_time > 0) {
+        
         if (time_ns_delta < min_frame_time) {
             SDL_DelayPrecise(min_frame_time - time_ns_delta);
             time_ns_now = SDL_GetTicksNS();

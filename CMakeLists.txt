@@ -64,6 +64,9 @@ else()
     FetchContent_MakeAvailable(SDL3)
 endif()
 
+# Engine sources
+set(ENGINE_SOURCES "src/engine/shader_loader.cpp")
+
 # Create the executable target.
 # Since Dear ImGUI is not being built as a separate static library,
 # we'll need to include the sources here.
@@ -71,6 +74,7 @@ add_executable(ElevatorSim "src/elevator.cpp"
                            "glad/src/glad.c"
                            ${IMGUI_SOURCES}
                            ${IMGUI_BACKEND_SOURCES}
+                           ${ENGINE_SOURCES}
 )
 
 # For debugging
