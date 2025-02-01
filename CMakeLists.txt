@@ -65,7 +65,7 @@ else()
 endif()
 
 # Engine sources
-set(ENGINE_SOURCES "src/engine/shader_loader.cpp")
+set(ENGINE_SOURCES "src/engine/shader_loader.cpp" "src/engine/engine.cpp")
 
 # Create the executable target.
 # Since Dear ImGUI is not being built as a separate static library,
