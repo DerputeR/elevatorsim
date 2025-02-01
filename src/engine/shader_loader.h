@@ -3,7 +3,7 @@
 #include <string>
 
 class ShaderLoader {
-	static std::string ShaderLoader::type_string(GLenum type);
+	static const char* ShaderLoader::type_string(GLenum type);
 	static GLuint compile(GLenum type, const GLchar* source);
 public:
 	static GLuint create_program(const GLchar* vert_shader_src, const GLchar* frag_shader_src);

@@ -15,7 +15,7 @@ Engine::~Engine() {
 void Engine::add_triangles(const std::vector<Vertex>& vertices) {
     size_t size = vertices.size();
     if (size % 3 != 0) {
-        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Failed to add triangles; buffer contains %D vertices", size);
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Failed to add triangles; buffer contains %llu vertices", size);
         return;
     }
     glBindBuffer(GL_ARRAY_BUFFER, vbo);

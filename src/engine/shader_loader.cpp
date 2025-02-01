@@ -6,8 +6,7 @@
 #include <errno.h>
 #include <SDL3/SDL_log.h>
 
-
-std::string ShaderLoader::type_string(GLenum type) {
+const char* ShaderLoader::type_string(GLenum type) {
     switch (type) {
     case GL_VERTEX_SHADER:
         return "vertex shader";
@@ -45,6 +44,16 @@ GLuint ShaderLoader::compile(GLenum type, const GLchar* src) {
 }
 
 GLuint ShaderLoader::create_program(const GLchar* vert_shader_src, const GLchar* frag_shader_src) {
+    if (vert_shader_src == nullptr) {
+        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Cannot compile shader program with null vertex shader source.");
+        return 0;
+    }
+
+    if (frag_shader_src == nullptr) {
+        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Cannot compile shader program with null fragment shader source.");
+        return 0;
+    }
+
     GLuint program = glCreateProgram(); // non-zero id
 
     GLuint vs = compile(GL_VERTEX_SHADER, vert_shader_src);
