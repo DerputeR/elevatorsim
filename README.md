@@ -10,8 +10,7 @@
 This project has been verified to build on:
 
 - Windows 11 (x64)
-- Ubuntu 24.01 LTS (x64)
-- Ubuntu 24.04 (arm64, proot)
+- Ubuntu 24.04 LTS (amd64, arm64)
 
 This project _should_ work on a variety of other systems, but this has not been tested yet.
 
