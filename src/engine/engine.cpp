@@ -2,7 +2,6 @@
 #include <string>
 #include "shader_loader.h"
 #include <SDL3/SDL_log.h>
-#define CPP_GLSL_INCLUDE
 
 Engine::Engine() {
     glGenBuffers(1, &this->vbo);
@@ -23,14 +22,6 @@ void Engine::add_triangles(const std::vector<Vertex>& vertices) {
 }
 
 void Engine::load_default_shaders() {
-    GLchar* vertex_src = 
-#include "shader/basic_vertex.glsl"
-    ;
-
-    GLchar* frag_src =
-#include "shader/basic_frag.glsl"
-    ;
-
-    ShaderLoader::create_program(vertex_src, frag_src);
+    ShaderLoader::create_program(ShaderLoader::DEFAULT_VERT_SRC, ShaderLoader::DEFAULT_FRAG_SRC);
 
 }

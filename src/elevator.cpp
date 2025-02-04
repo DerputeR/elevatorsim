@@ -93,6 +93,9 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char** argv) {
     ImGui_ImplSDL3_InitForOpenGL(window, &context);
     ImGui_ImplOpenGL3_Init();
 
+    // test 
+    ShaderLoader::create_program(ShaderLoader::DEFAULT_VERT_SRC, ShaderLoader::DEFAULT_FRAG_SRC);
+
     return SDL_APP_CONTINUE;
 }
 

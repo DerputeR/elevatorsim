@@ -5,6 +5,25 @@
 #include <glad/glad.h>
 #include <errno.h>
 #include <SDL3/SDL_log.h>
+#include <vector>
+
+const GLchar* ShaderLoader::DEFAULT_VERT_SRC = R"(
+#version 330 core
+layout (location = 0) in vec3 pos;
+
+void main() {
+    gl_Position = vec4(pos.x, pos.y, pos.z, 1.0);
+}
+)";
+
+const GLchar* ShaderLoader::DEFAULT_FRAG_SRC = R"(
+#version 330 core
+out vec4 FragColor;
+
+void main() {
+    FragColor = vec4(1.0, 0.5, 0.2, 1.0);
+} 
+)";
 
 const char* ShaderLoader::type_string(GLenum type) {
     switch (type) {
@@ -28,15 +47,14 @@ GLuint ShaderLoader::compile(GLenum type, const GLchar* src) {
     if (success == GL_FALSE) {
         GLsizei msgLen;
         glGetShaderiv(id, GL_INFO_LOG_LENGTH, &msgLen);
-        GLchar* msg = (GLchar*)_malloca(msgLen * sizeof(GLchar));
+        std::vector<GLchar> msg(msgLen, 0);
 
-        glGetShaderInfoLog(id, msgLen, &msgLen, msg);
-        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Failed to compile %s!", type_string(type));
+        glGetShaderInfoLog(id, msgLen, &msgLen, &msg[0]);
+        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Failed to compile %s: %s", type_string(type), &msg[0]);
 
         // cleanup failed shader compile
         glDeleteShader(id);
 
-        _freea(msg);
         return 0;
     }
 
@@ -89,12 +107,11 @@ GLuint ShaderLoader::create_program(const GLchar* vert_shader_src, const GLchar*
     if (success == GL_FALSE) {
         GLint msgLen;
         glGetProgramiv(program, GL_INFO_LOG_LENGTH, &msgLen);
-        GLchar* msg = (GLchar*)_malloca(msgLen * sizeof(GLchar));
+        std::vector<GLchar> msg(msgLen, 0);
 
-        glGetProgramInfoLog(program, msgLen, &msgLen, msg);
-        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Shader program linking failed: %s", msg);
+        glGetProgramInfoLog(program, msgLen, &msgLen, &msg[0]);
+        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Shader program linking failed: %s", &msg[0]);
 
-        _freea(msg);
         return 0;
     }
 
@@ -105,12 +122,11 @@ GLuint ShaderLoader::create_program(const GLchar* vert_shader_src, const GLchar*
     if (success == GL_FALSE) {
         GLint msgLen;
         glGetProgramiv(program, GL_INFO_LOG_LENGTH, &msgLen);
-        GLchar* msg = (GLchar*)_malloca(msgLen * sizeof(GLchar));
+        std::vector<GLchar> msg(msgLen, 0);
 
-        glGetProgramInfoLog(program, msgLen, &msgLen, msg);
-        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Shader program validation failed: %s", msg);
+        glGetProgramInfoLog(program, msgLen, &msgLen, &msg[0]);
+        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Shader program validation failed: %s", &msg[0]);
 
-        _freea(msg);
         return 0;
     }
 
