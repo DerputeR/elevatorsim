@@ -7,8 +7,8 @@ project(ElevatorSimProject  VERSION 0.1.0
 configure_file("src/app_info.h.in" "${CMAKE_SOURCE_DIR}/src/app_info.h" @ONLY)
 
 # Dependency management, excluding SDL3 (special case handled below)
+set(FETCHCONTENT_UPDATES_DISCONNECTED ON CACHE BOOL "If enabled, only fetch content the first time. Future runs will not attempt to redownload.")
 include(FetchContent)
-option(FETCHCONTENT_UPDATES_DISCONNECTED "If enabled, only fetch content the first time. Future runs will not attempt to redownload." ON)
 
 FetchContent_Declare(
     imgui            
