@@ -1,20 +1,21 @@
 #pragma once
 #include <cstddef>
-#include <array>
+#include <vector>
 
 enum class direction {
     up,
     down
 };
 
-template <int N>
 struct elevator {
     const int min_floor = 0;
-    const int max_floor = N - 1;
+    const int max_floor;
     int current_floor = 0;
     bool stopped = true;
     direction move_dir = direction::up;
-    std::array<bool, N> floors_called = {};
+    std::vector<bool> floors_called;
+
+    elevator(int N) : max_floor{N - 1}, floors_called(N, false) { }
 
     bool call_floor(int floor) {
         if (floor <= max_floor && floor >= min_floor) {
