@@ -2,4 +2,8 @@
 
 #include <string>
 
-const constexpr char *APP_VERSION = "@ElevatorSimProject_VERSION_MAJOR@.@ElevatorSimProject_VERSION_MINOR@.@ElevatorSimProject_VERSION_PATCH@";
+const constexpr char* APP_FULL_NAME = "Elevator Simulation";
+const constexpr char* APP_VERSION = "@ElevatorSimProject_VERSION_MAJOR@.@ElevatorSimProject_VERSION_MINOR@.@ElevatorSimProject_VERSION_PATCH@";
+const constexpr char* APP_PACKAGE = "com.example.elevatorsim";
+const constexpr char* APP_WINDOW_TITLE = "Elevator Simulation";
+
