@@ -72,7 +72,8 @@ set(ENGINE_SOURCES "src/engine/shader_loader.cpp" "src/engine/engine.cpp")
 # Create the executable target.
 # Since Dear ImGUI is not being built as a separate static library,
 # we'll need to include the sources here.
-add_executable(ElevatorSim "src/elevator.cpp"
+add_executable(ElevatorSim "src/main.cpp"
+                           "src/elevator.cpp"
                            "glad/src/glad.c"
                            ${IMGUI_SOURCES}
                            ${IMGUI_BACKEND_SOURCES}

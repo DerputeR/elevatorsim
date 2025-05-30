@@ -17,27 +17,8 @@ struct elevator {
 
     elevator(int N) : max_floor{N - 1}, floors_called(N, false) { }
 
-    bool call_floor(int floor) {
-        if (floor <= max_floor && floor >= min_floor) {
-            floors_called[floor] = true;
-            return true;
-        }
-	return false;
-    }
-
-    bool move_to_floor(int floor) {
-        if (floor <= max_floor && floor >= min_floor) {
-            floors_called[floor] = false;
-	    if (floor < current_floor) {
-                move_dir = direction::down;
-	    } else if (floor > current_floor) {
-                move_dir = direction::up;
-            }
-	    current_floor = floor;
-	    return true;
-        }
-        return false;
-    }
+    bool call_floor(int floor);
+    bool move_to_floor(int floor);
 };
 
 void single_scan(elevator& e);
