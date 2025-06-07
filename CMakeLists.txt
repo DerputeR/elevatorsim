@@ -4,6 +4,10 @@ project(ElevatorSimProject  VERSION 0.1.0
                             DESCRIPTION "Simulates a single-carriage elevator system"
                             LANGUAGES C CXX)
 
+set(APP_PACKAGE "com.example.elevatorsim")
+set(APP_FULL_NAME "Elevator Simulation")
+set(APP_WINDOW_TITLE "Elevator Simulation")
+
 configure_file("src/app_info.h.in" "${CMAKE_SOURCE_DIR}/src/app_info.h" @ONLY)
 
 # Dependency management, excluding SDL3 (special case handled below)
