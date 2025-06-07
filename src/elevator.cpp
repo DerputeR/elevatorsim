@@ -9,8 +9,7 @@ bool elevator::call_floor(int floor) {
 }
 
 bool elevator::move_to_floor(int floor) {
-    if (floor <= max_floor && floor >= min_floor)
-{
+    if (floor <= max_floor && floor >= min_floor) {
         floors_called[floor] = false;
         if (floor < current_floor) {
             move_dir = direction::down;
