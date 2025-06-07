@@ -115,6 +115,7 @@ target_link_libraries(ElevatorSim PRIVATE glm)
 
 # Installation rules
 include(GNUInstallDirs)
+# include(InstallRequiredSystemLibraries)
 install(TARGETS
             ElevatorSim
         RUNTIME
@@ -150,6 +151,26 @@ if (TARGET SDL3-static)
             DESTINATION ${CMAKE_INSTALL_LIBDIR}
     )
 endif()
+
+# RPATH mangling
+# use, i.e. don't skip the full RPATH for the build tree
+set(CMAKE_SKIP_BUILD_RPATH FALSE)
+
+# when building, don't use the install RPATH already
+# (but later on when installing)
+set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
+set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_LIBDIR}")
+
+# add the automatically determined parts of the RPATH
+# which point to directories outside the build tree to the install RPATH
+set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+
+# the RPATH to be used when installing, but only if it's not a system directory
+list(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${CMAKE_INSTALL_LIBDIR}" isSystemDir)
+if("${isSystemDir}" STREQUAL "-1")
+    set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_LIBDIR}")
+endif()
+
 
 # The CMake docs have some examples:
 # https://cmake.org/cmake/help/latest/command/install.html#example-install-targets-with-per-artifact-components
