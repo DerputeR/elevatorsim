@@ -17,7 +17,7 @@ include(FetchContent)
 FetchContent_Declare(
     imgui            
     GIT_REPOSITORY  https://github.com/ocornut/imgui
-    GIT_TAG         v1.91.7-docking
+    GIT_TAG         v1.91.9b-docking
 )
 FetchContent_Declare(
     glm            
@@ -65,7 +65,7 @@ else()
     FetchContent_Declare(
         SDL3
         GIT_REPOSITORY  https://github.com/libsdl-org/SDL
-        GIT_TAG         release-3.2.2
+        GIT_TAG         release-3.2.16
     )
     FetchContent_MakeAvailable(SDL3)
 endif()

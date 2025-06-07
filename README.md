@@ -1,7 +1,7 @@
 # Dependencies
 
-- SDL release-3.2.0 (fetched)
-- Dear ImGui 1.91.7-docking (fetched)
+- SDL release-3.2.16 (fetched)
+- Dear ImGui 1.91.9b-docking (fetched)
 - glad (included)
 - GLM 1.0.1 (fetched)
 
