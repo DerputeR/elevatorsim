@@ -4,10 +4,16 @@ project(ElevatorSimProject  VERSION 0.1.0
                             DESCRIPTION "Simulates a single-carriage elevator system"
                             LANGUAGES C CXX)
 
+set(APP_PACKAGE "com.example.elevatorsim")
+set(APP_FULL_NAME "Elevator Simulation")
+set(APP_WINDOW_TITLE "Elevator Simulation")
+
 configure_file("src/app_info.h.in" "${CMAKE_SOURCE_DIR}/src/app_info.h" @ONLY)
 
 # Dependency management, excluding SDL3 (special case handled below)
+set(FETCHCONTENT_UPDATES_DISCONNECTED ON CACHE BOOL "If enabled, only fetch content the first time. Future runs will not attempt to redownload.")
 include(FetchContent)
+
 FetchContent_Declare(
     imgui            
     GIT_REPOSITORY  https://github.com/ocornut/imgui
@@ -59,18 +65,23 @@ else()
     FetchContent_Declare(
         SDL3
         GIT_REPOSITORY  https://github.com/libsdl-org/SDL
-        GIT_TAG         release-3.2.0
+        GIT_TAG         release-3.2.2
     )
     FetchContent_MakeAvailable(SDL3)
 endif()
 
+# Engine sources
+set(ENGINE_SOURCES "src/engine/shader_loader.cpp" "src/engine/engine.cpp")
+
 # Create the executable target.
 # Since Dear ImGUI is not being built as a separate static library,
 # we'll need to include the sources here.
-add_executable(ElevatorSim "src/elevator.cpp"
+add_executable(ElevatorSim "src/main.cpp"
+                           "src/elevator.cpp"
                            "glad/src/glad.c"
                            ${IMGUI_SOURCES}
                            ${IMGUI_BACKEND_SOURCES}
+                           ${ENGINE_SOURCES}
 )
 
 # For debugging

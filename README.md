@@ -5,13 +5,22 @@
 - glad (included)
 - GLM 1.0.1 (fetched)
 
+# Supported systems
+
+This project has been verified to build on:
+
+- Windows 11 (x64)
+- Ubuntu 24.04 LTS (amd64, arm64)
+
+This project _should_ work on a variety of other systems, but this has not been tested yet.
+
 # Installation
 
 This project uses CMake to build and install.
 
 ## Windows
 
-I personally use Ninja as the build system and MSVC 2022 x64 as the compiler, but it should work fine with other build systems and compilers.
+I recommend using Ninja as the build system and MSVC 2022 x64 as the compiler, but it should work fine with other build systems and compilers.
 
 ### To compile using MSVC and Ninja
 
@@ -22,9 +31,9 @@ I personally use Ninja as the build system and MSVC 2022 x64 as the compiler, bu
 4. Open a Visual Studio Developer terminal instance in the root directory of the project (here, using the VS Developer Powershell profile added to Windows Terminal) and run the following:
 
     ```powershell
-    mkdir build
-    cd build
-    cmake -G Ninja ..
+    mkdir build &&
+    cd build &&
+    cmake -G Ninja .. &&
     cmake --build .
     ```
 
@@ -40,33 +49,24 @@ However, if you prefer to work with the older solution-based approach:
 2. Open a terminal in the root directory of the project and run the following:
 
    ```powershell
-   mkdir build
-   cd build
+   mkdir build &&
+   cd build &&
    cmake -G "Visual Studio 17 2022" ..
    ```
 3. Open `ElevatorSimProject.sln` in Visual Studio Community Edition.
 
 ## Linux
 
-GLFW includes Wayland and X11 backends which are enabled by default. These defaults have not been altered in this project. As such, ensure your system has the correct packages installed. See the [GLFW docs](https://www.glfw.org/docs/latest/compile.html) for more detailed info.
-
-For Ubuntu/Debian:
-
-```bash
-sudo apt install libwayland-dev libxkbcommon-dev xorg-dev
-```
-
-The remaining process is similar to the Windows build process.
+This process is similar to the Windows build process.
 
 1. Download and setup CMake 3.21 or above (see [here](https://www.linuxfordevices.com/tutorials/linux/install-cmake-on-linux) for a guide)
 2. (Optional) Download and setup [Ninja](https://github.com/ninja-build/ninja/wiki/Pre-built-Ninja-packages).
 3. Open a terminal at the root directory of the project and run the following:
 
     ```bash
-    mkdir build
-    cd build
-    cmake ..
-    # cmake -G Ninja .. # Use this if you want to use Ninja
+    mkdir build &&
+    cd build &&
+    cmake -G Ninja .. &&
     cmake --build .
     ```
 
