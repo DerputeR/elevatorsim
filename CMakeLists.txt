@@ -100,7 +100,7 @@ endif()
 
 # Link to the actual SDL3 library.
 target_link_libraries(ElevatorSim PRIVATE SDL3::SDL3)
-target_compile_features(ElevatorSim PUBLIC cxx_std_17)
+target_compile_features(ElevatorSim PUBLIC cxx_std_23)
 set_target_properties(ElevatorSim PROPERTIES CXX_EXTENSIONS OFF)
 
 # Pick up the includes for our dependencies

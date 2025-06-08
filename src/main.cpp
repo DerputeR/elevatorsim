@@ -64,14 +64,6 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char** argv) {
         SDL_LogCritical(SDL_LOG_CATEGORY_RENDER, "Failed to create SDL renderer for window: %s", SDL_GetError());
         return SDL_APP_FAILURE;
     }
-
-    auto renderer_name = SDL_GetRendererName(renderer);
-    if (renderer_name != nullptr) {
-        SDL_LogDebug(SDL_LOG_CATEGORY_RENDER, "Initialized SDL renderer '%s'", renderer_name);
-    }
-    else {
-        SDL_LogError(SDL_LOG_CATEGORY_RENDER, "Initialized SDL renderer with unknown name: %s", SDL_GetError());
-    }
     
     if (vsync_enabled) {
         if (vsync_adaptive) {
