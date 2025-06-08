@@ -3,6 +3,7 @@
 #include <cmath>
 #include <SDL3/SDL_rect.h>
 #include <imgui.h>
+#include <imgui_internal.h>
 
 static float time = 0.0f;
 static float rpm = 60.0f;
@@ -12,7 +13,7 @@ void Scene::draw(SDL_Renderer& renderer, float delta_time) const {
     time += delta_time;
     SDL_FRect rect;
 
-    SDL_SetRenderDrawColor(&renderer, 125, 200, 255, SDL_ALPHA_OPAQUE);  /* blue, full alpha */
+    SDL_SetRenderDrawColor(&renderer, 125, 200, 255, SDL_ALPHA_OPAQUE);
     rect.x = 100.0f + 200.0f * std::cos(time * 2.0f * PI * rpm / 60.0f);
     rect.y = 100.0f + 200.0f * std::sin(time * 2.0f * PI * rpm / 60.0f);
     rect.w = 440.0f;
@@ -21,17 +22,46 @@ void Scene::draw(SDL_Renderer& renderer, float delta_time) const {
 }
 
 void Scene::draw_gui() {
-    ImGuiWindowFlags window_flags = 0;
+    ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoCollapse;
 
+    static bool docked = false;
     const ImGuiViewport* main_viewport = ImGui::GetMainViewport();
-    ImGui::SetNextWindowPos(ImVec2(main_viewport->WorkPos.x + 650, main_viewport->WorkPos.y + 20), ImGuiCond_FirstUseEver);
-    ImGui::SetNextWindowSize(ImVec2(550, 680), ImGuiCond_FirstUseEver);
-    // Main body of the Demo window starts here.
-    if (!ImGui::Begin("Elevator Controls", NULL, window_flags)) {
-        // Early out if the window is collapsed, as an optimization.
-        ImGui::End();
-        return;
+
+    ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_PassthruCentralNode
+            | ImGuiDockNodeFlags_NoUndocking;
+    ImGuiID dockspace_id = ImGui::GetID("MainDockspace");
+
+    if (ImGui::DockBuilderGetNode(dockspace_id) == nullptr) {
+        float right_dock_percent = 0.25f;
+        ImGui::DockBuilderAddNode(dockspace_id, ImGuiDockNodeFlags_DockSpace);
+        ImGui::DockBuilderSetNodeSize(dockspace_id, main_viewport->WorkSize);
+        ImGuiID right_dock_id = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Right, right_dock_percent, nullptr, nullptr);
+        ImGui::DockBuilderDockWindow("Elevator Controls", right_dock_id);
+        ImGui::DockBuilderDockWindow("Dear ImGui Demo", right_dock_id);
+        ImGui::DockBuilderFinish(dockspace_id);
     }
+
+    ImGui::DockSpaceOverViewport(dockspace_id, main_viewport, dockspace_flags);
+
+    //ImGui::SetNextWindowPos(ImVec2(main_viewport->WorkPos.x + 650, main_viewport->WorkPos.y + 20), ImGuiCond_Once);
+    //ImGui::SetNextWindowSize(ImVec2(300, 400), ImGuiCond_Once);
+    if (ImGui::Begin("Elevator Controls", nullptr, window_flags)) {
+        
+        // draw controls
+
+    }
+
+    // show the demo window only when in debug build
+#ifdef DEBUG
+    ImGui::ShowDemoWindow();
+#endif
+
+    // this mainly only does something if we have multiple things docked
+    if (!docked) {
+        ImGui::FocusWindow(ImGui::FindWindowByName("Elevator Controls"));
+        docked = true;
+    }
+
 
     ImGui::End();
 }

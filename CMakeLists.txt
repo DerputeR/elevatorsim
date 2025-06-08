@@ -96,6 +96,7 @@ if (MSVC AND WIN32 AND NOT MSVC_VERSION VERSION_LESS 142)
     target_link_options(ElevatorSim PRIVATE $<$<CONFIG:Debug>:/INCREMENTAL>)
     target_compile_options(ElevatorSim PRIVATE $<$<CONFIG:Debug>:/ZI>)
     target_sources(ElevatorSim PRIVATE $<$<CONFIG:Debug>:${IMGUI_DEBUG}>)
+    target_compile_definitions(ElevatorSim PRIVATE $<$<CONFIG:Debug>:DEBUG>)
 endif()
 
 # Link to the actual SDL3 library.
