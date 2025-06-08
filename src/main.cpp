@@ -121,7 +121,8 @@ SDL_AppResult SDL_AppIterate(void* appstate) {
     ImGui_ImplSDLRenderer3_NewFrame();
     ImGui_ImplSDL3_NewFrame();
     ImGui::NewFrame();
-    ImGui::ShowDemoWindow();
+    scene.draw_gui();
+    // ImGui::ShowDemoWindow();
     ImGui::Render();
     ImGui_ImplSDLRenderer3_RenderDrawData(ImGui::GetDrawData(), renderer);
 

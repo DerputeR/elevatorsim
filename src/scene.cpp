@@ -2,6 +2,7 @@
 #include <numbers>
 #include <cmath>
 #include <SDL3/SDL_rect.h>
+#include <imgui.h>
 
 static float time = 0.0f;
 static float rpm = 60.0f;
@@ -17,4 +18,20 @@ void Scene::draw(SDL_Renderer& renderer, float delta_time) const {
     rect.w = 440.0f;
     rect.h = 280.0f;
     SDL_RenderFillRect(&renderer, &rect);
+}
+
+void Scene::draw_gui() {
+    ImGuiWindowFlags window_flags = 0;
+
+    const ImGuiViewport* main_viewport = ImGui::GetMainViewport();
+    ImGui::SetNextWindowPos(ImVec2(main_viewport->WorkPos.x + 650, main_viewport->WorkPos.y + 20), ImGuiCond_FirstUseEver);
+    ImGui::SetNextWindowSize(ImVec2(550, 680), ImGuiCond_FirstUseEver);
+    // Main body of the Demo window starts here.
+    if (!ImGui::Begin("Elevator Controls", NULL, window_flags)) {
+        // Early out if the window is collapsed, as an optimization.
+        ImGui::End();
+        return;
+    }
+
+    ImGui::End();
 }
