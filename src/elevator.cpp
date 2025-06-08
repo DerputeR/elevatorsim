@@ -1,5 +1,7 @@
 #include "elevator.h"
 
+static int find_next_floor_in_direction(const Elevator& e, const Direction dir);
+
 Direction operator-(Direction& d) {
     switch (d) {
     case Direction::Up:
