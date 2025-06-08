@@ -10,7 +10,7 @@ void Scene::draw(SDL_Renderer& renderer, float delta_time) const {
     time += delta_time;
     SDL_FRect rect;
 
-    SDL_SetRenderDrawColor(&renderer, 0, 0, 255, SDL_ALPHA_OPAQUE);  /* blue, full alpha */
+    SDL_SetRenderDrawColor(&renderer, 125, 200, 255, SDL_ALPHA_OPAQUE);  /* blue, full alpha */
     rect.x = 100.0f + 200.0f * cosf(time * 2.0f * PI * rpm / 60.0f);
     rect.y = 100.0f + 200.0f * sinf(time * 2.0f * PI * rpm / 60.0f);
     rect.w = 440.0f;

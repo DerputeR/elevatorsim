@@ -112,7 +112,7 @@ SDL_AppResult SDL_AppIterate(void* appstate) {
     }
 
     // clear the buffer    
-    SDL_SetRenderDrawColor(renderer, 51, 76, 76, SDL_ALPHA_OPAQUE);
+    SDL_SetRenderDrawColor(renderer, 32, 32, 32, SDL_ALPHA_OPAQUE);
     SDL_RenderClear(renderer);
 
     // draw the scene
