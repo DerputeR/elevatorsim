@@ -1,6 +1,6 @@
 #include "elevator.h"
 
-bool elevator::call_floor(int floor) {
+bool Elevator::call_floor(int floor) {
     if (floor <= max_floor && floor >= min_floor) {
         floors_called[floor] = true;
         return true;
@@ -8,13 +8,13 @@ bool elevator::call_floor(int floor) {
     return false;
 }
 
-bool elevator::move_to_floor(int floor) {
+bool Elevator::move_to_floor(int floor) {
     if (floor <= max_floor && floor >= min_floor) {
         floors_called[floor] = false;
         if (floor < current_floor) {
-            move_dir = direction::down;
+            move_dir = Direction::down;
         } else if (floor > current_floor) {
-            move_dir = direction::up;
+            move_dir = Direction::up;
         }
         current_floor = floor;
         return true;
@@ -22,18 +22,18 @@ bool elevator::move_to_floor(int floor) {
     return false;
 }
 
-void single_scan(elevator& e) {
+void single_scan(Elevator& e) {
 
 }
 
-void single_look(elevator& e) {
+void single_look(Elevator& e) {
 
 }
 
-void single_cscan(elevator& e) {
+void single_cscan(Elevator& e) {
 
 }
 
-void single_clook(elevator& e) {
+void single_clook(Elevator& e) {
 
 }

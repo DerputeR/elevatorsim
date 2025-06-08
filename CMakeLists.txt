@@ -39,7 +39,7 @@ set(IMGUI_SOURCES "${imgui_SOURCE_DIR}/imgui.cpp"
 
 # We will also need to do so for the backend sources
 set(IMGUI_BACKEND_SOURCES "${imgui_SOURCE_DIR}/backends/imgui_impl_sdl3.cpp"
-                          "${imgui_SOURCE_DIR}/backends/imgui_impl_opengl3.cpp"
+                          "${imgui_SOURCE_DIR}/backends/imgui_impl_sdlrenderer3.cpp"
 )
 
 # This is recommended for debugging in VS
@@ -84,6 +84,7 @@ set(ENGINE_SOURCES "src/engine/shader_loader.cpp" "src/engine/engine.cpp")
 # we'll need to include the sources here.
 add_executable(ElevatorSim "src/main.cpp"
                            "src/elevator.cpp"
+                           "src/scene.cpp"
                            "glad/src/glad.c"
                            ${IMGUI_SOURCES}
                            ${IMGUI_BACKEND_SOURCES}

@@ -3,6 +3,7 @@
 - SDL release-3.2.16 (fetched)
 - Dear ImGui 1.91.9b-docking (fetched)
 - glad (included)
+  - *Note: this is unused until I move away from the SDL3 Render API*
 - GLM 1.0.1 (fetched)
 
 # Supported systems
