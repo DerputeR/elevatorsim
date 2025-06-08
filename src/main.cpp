@@ -45,6 +45,7 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char** argv) {
     SDL_SetAppMetadata(APP_FULL_NAME, APP_VERSION, APP_PACKAGE);
     SDL_SetLogPriority(SDL_LOG_CATEGORY_VIDEO, SDL_LOG_PRIORITY_DEBUG);
     SDL_SetLogPriority(SDL_LOG_CATEGORY_RENDER, SDL_LOG_PRIORITY_DEBUG);
+    SDL_SetLogPriority(SDL_LOG_CATEGORY_CUSTOM, SDL_LOG_PRIORITY_DEBUG);
 
     if (!SDL_Init(SDL_INIT_VIDEO)) {
         SDL_LogCritical(SDL_LOG_CATEGORY_ASSERT, "SDL failed to init: %s", SDL_GetError());
@@ -112,13 +113,17 @@ SDL_AppResult SDL_AppIterate(void* appstate) {
         }
     }
 
+    // update the scene
+    scene.update(time_ns_delta / static_cast<float>(ONE_SECOND_NS));
+
     // clear the buffer    
     SDL_SetRenderDrawColor(renderer, 32, 32, 32, SDL_ALPHA_OPAQUE);
     SDL_RenderClear(renderer);
 
     // draw the scene
-    scene.draw(*renderer, time_ns_delta / static_cast<float>(ONE_SECOND_NS));
+    scene.draw(*renderer);
 
+    // draw the GUI
     ImGui_ImplSDLRenderer3_NewFrame();
     ImGui_ImplSDL3_NewFrame();
     ImGui::NewFrame();

@@ -28,6 +28,19 @@ bool Elevator::is_floor_called(int floor) const {
     return false;
 }
 
+bool Elevator::is_stopped() const {
+    return stop_timer > 0.0f;
+}
+
+void Elevator::set_stopped(bool state) {
+    if (state) {
+        stop_timer = stop_duration;
+    }
+    else {
+        stop_timer = 0.0f;
+    }
+}
+
 bool Elevator::move_to_floor(int floor) {
     if (floor <= max_floor && floor >= min_floor) {
         floors_called[floor - min_floor] = false;
@@ -55,7 +68,7 @@ void single_scan(Elevator& e) {
 
     // if there are no more floors to service, exit early
     if (next_floor == -1) {
-        e.stopped = true;
+        e.set_stopped(true);
         return;
     }
     else {
@@ -87,7 +100,7 @@ void single_look(Elevator& e) {
 
     // if there are no more floors to service, exit early
     if (next_floor == -1) {
-        e.stopped = true;
+        e.set_stopped(true);
         return;
     }
     else {
