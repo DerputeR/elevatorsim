@@ -15,15 +15,22 @@ Direction operator-(Direction& d) {
 
 bool Elevator::call_floor(int floor) {
     if (floor <= max_floor && floor >= min_floor) {
-        floors_called[floor] = true;
+        floors_called[floor - min_floor] = true;
         return true;
+    }
+    return false;
+}
+
+bool Elevator::is_floor_called(int floor) const {
+    if (floor <= max_floor && floor >= min_floor) {
+        return floors_called[floor - min_floor];
     }
     return false;
 }
 
 bool Elevator::move_to_floor(int floor) {
     if (floor <= max_floor && floor >= min_floor) {
-        floors_called[floor] = false;
+        floors_called[floor - min_floor] = false;
         if (floor < current_floor) {
             move_dir = Direction::Down;
         } else if (floor > current_floor) {
@@ -61,8 +68,8 @@ static int find_next_floor_in_direction(const Elevator& e, const Direction dir) 
     for (int i = e.current_floor;
             dir == Direction::Up ? i <= e.max_floor : i >= e.min_floor;
             i++) {
-        if (e.floors_called[i]) {
-            next_floor = e.floors_called[i];
+        if (e.is_floor_called(i)) {
+            next_floor = i;
             break;
         }
     }

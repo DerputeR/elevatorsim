@@ -52,7 +52,7 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char** argv) {
     }
 
     // Window init
-    window = SDL_CreateWindow(APP_WINDOW_TITLE, 1280, 720, SDL_WINDOW_RESIZABLE);
+    window = SDL_CreateWindow(APP_WINDOW_TITLE, 1280, 720, SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIGH_PIXEL_DENSITY);
     if (window == nullptr) {
         SDL_LogCritical(SDL_LOG_CATEGORY_VIDEO, "Failed to create window: %s", SDL_GetError());
         return SDL_APP_FAILURE;

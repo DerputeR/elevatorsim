@@ -10,18 +10,19 @@ enum class Direction {
 Direction operator-(Direction& d);
 
 struct Elevator {
-    const int min_floor = 0;
+    const int min_floor = 1;
     const int max_floor;
-    int current_floor = 0;
-    int next_floor = 0;
+    int current_floor = min_floor;
+    int next_floor = min_floor;
     bool stopped = true;
     Direction move_dir = Direction::Up;
     std::vector<bool> floors_called;
 
     // ctor
-    Elevator(int N) : max_floor{N - 1}, floors_called(N, false) { }
+    Elevator(int N) : max_floor{N}, floors_called(N, false) { }
 
     bool call_floor(int floor);
+    bool is_floor_called(int floor) const;
     bool move_to_floor(int floor);
 };
 
