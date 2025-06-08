@@ -8,6 +8,8 @@ Direction operator-(Direction& d) {
         return Direction::Down;
     case Direction::Down:
         return Direction::Up;
+    default:
+        return d;
     }
 }
 
