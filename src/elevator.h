@@ -24,7 +24,7 @@ struct Elevator {
     float stop_timer = 0.0f;
     float stop_duration = 2.0f;
     float y_position = 1.0f; // actual position of the elevator car
-    float move_speed = 1.0f;
+    float move_speed = 4.0f;
 
     // ctor
     Elevator(int N) : max_floor{N}, floors_called(N, false) { }
@@ -32,7 +32,6 @@ struct Elevator {
     // helper functions
     bool call_floor(int floor, bool state = true);
     bool is_floor_called(int floor) const;
-    bool move_to_floor(int floor);
     bool is_stopped() const;
     void set_stopped(bool state);
 

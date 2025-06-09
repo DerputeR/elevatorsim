@@ -9,11 +9,8 @@
 
 constexpr float PI = std::numbers::pi_v<float>;
 
-static SDL_FRect cab_rect{0.0f, 0.0f, 64.0f, 96.0f};
-
-static float rpm = 60.0f;
 static bool elevator_timer_enabled = true;
-static int active_algorithm = 0;
+static int active_algorithm = 1;
 static const char* algorithms[] = { "Manual", "LOOK", "SCAN" };
 
 void Scene::update(float delta_time) {
@@ -36,11 +33,12 @@ void Scene::update(float delta_time) {
             // move
             if (elevator.move_dir == Direction::Up) {
                 elevator.y_position += (delta_time * elevator.move_speed);
+                elevator.current_floor = static_cast<int>(std::floor(elevator.y_position));
             }
             else {
                 elevator.y_position -= (delta_time * elevator.move_speed);
+                elevator.current_floor = static_cast<int>(std::ceil(elevator.y_position));
             }
-            elevator.current_floor = static_cast<int>(elevator.y_position);
         }
         else {
             elevator.set_stopped(true);
@@ -70,20 +68,33 @@ void Scene::update(float delta_time) {
 }
 
 void Scene::draw(SDL_Renderer& renderer) const {
-    SDL_FRect rect;
+    // draw the floors as line segments dividing up the height of the window
+    int floor_count = 1 + elevator.max_floor - elevator.min_floor;
+    SDL_Window* window = SDL_GetRenderWindow(&renderer);
+    int width = 1280;
+    int height = 720;
+    SDL_GetWindowSizeInPixels(window, &width, &height);
+    float floor_height = (static_cast<float>(height) / static_cast<float>(floor_count));
+    SDL_SetRenderDrawColor(&renderer, 220, 220, 220, SDL_ALPHA_OPAQUE);
+    // skip the top-most line
+    for (int i = 1; i < floor_count; i++) {
+        float line_y = i * floor_height;
+        SDL_RenderLine(&renderer, 0.0f, line_y, 400.0f, line_y);
+    }
+
+    float cab_height = std::min(floor_height, 64.0f);
+    float cab_y_pos = height - cab_height - (floor_height * (elevator.y_position - 1.0f));
+
+    SDL_FRect cab_rect{0.0f, cab_y_pos, 48.0f, cab_height};
 
     SDL_SetRenderDrawColor(&renderer, 125, 200, 255, SDL_ALPHA_OPAQUE);
-    rect.x = 100.0f + 100.0f * std::cos(total_time * 2.0f * PI * rpm / 60.0f);
-    rect.y = 100.0f + 100.0f * std::sin(total_time * 2.0f * PI * rpm / 60.0f);
-    rect.w = 64.0f;
-    rect.h = 64.0f;
-    SDL_RenderFillRect(&renderer, &rect);
+    SDL_RenderFillRect(&renderer, &cab_rect);
 }
 
 
 
 void Scene::draw_gui() {
-    ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoCollapse;
+    ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_HorizontalScrollbar;
 
     static bool docked = false;
     const ImGuiViewport* main_viewport = ImGui::GetMainViewport();
@@ -93,7 +104,7 @@ void Scene::draw_gui() {
     ImGuiID dockspace_id = ImGui::GetID("MainDockspace");
 
     if (ImGui::DockBuilderGetNode(dockspace_id) == nullptr) {
-        float right_dock_percent = 0.25f;
+        float right_dock_percent = 0.6f;
         ImGui::DockBuilderAddNode(dockspace_id, ImGuiDockNodeFlags_DockSpace);
         ImGui::DockBuilderSetNodeSize(dockspace_id, main_viewport->WorkSize);
         ImGuiID right_dock_id = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Right, right_dock_percent, nullptr, nullptr);
@@ -136,10 +147,11 @@ void Scene::draw_gui() {
         ImGui::SeparatorText("Backend");
         ImGui::Combo("Algorithm", &active_algorithm, algorithms, 3);
         ImGui::DragFloat("Stop duration", &elevator.stop_duration, 0.1f, 0.0f, 10.0f, "%.1f");
+        ImGui::DragFloat("Cab speed", &elevator.move_speed, 0.1f, 1.0f, 10.0f, "%.1f");
 
         if (active_algorithm == 0) {
             ImGui::SeparatorText("Manual controls");
-            if (ImGui::BeginListBox("Set next floor")) {
+            if (ImGui::BeginListBox("Set next floor", ImVec2(100.0f, 0.0f))) {
                 for (int i = elevator.max_floor; i >= elevator.min_floor; i--) {
                     const bool is_selected = (elevator.next_floor == i);
                     if (ImGui::Selectable(std::format("Floor {}", i).c_str(), is_selected)) {
@@ -153,7 +165,9 @@ void Scene::draw_gui() {
                 ImGui::EndListBox();
             }
 
-            if (ImGui::BeginListBox("Teleport to floor")) {
+            ImGui::SameLine();
+
+            if (ImGui::BeginListBox("Teleport to floor", ImVec2(100.0f, 0.0f))) {
                 for (int i = elevator.max_floor; i >= elevator.min_floor; i--) {
                     const bool is_selected = (elevator.current_floor == i);
                     if (ImGui::Selectable(std::format("Floor {}", i).c_str(), is_selected)) {

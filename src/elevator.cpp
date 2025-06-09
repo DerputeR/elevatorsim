@@ -54,20 +54,6 @@ void Elevator::set_stopped(bool state) {
     }
 }
 
-bool Elevator::move_to_floor(int floor) {
-    if (floor <= max_floor && floor >= min_floor) {
-        floors_called[floor - min_floor] = false;
-        if (floor < current_floor) {
-            move_dir = Direction::Down;
-        } else if (floor > current_floor) {
-            move_dir = Direction::Up;
-        }
-        current_floor = floor;
-        return true;
-    }
-    return false;
-}
-
 void Elevator::single_scan(Elevator& e) {
     // check if there are any called floors in the current direction
     int next_floor = find_next_floor_in_direction(e, e.move_dir);
