@@ -15,14 +15,24 @@ Direction operator-(Direction& d) {
 
 static int find_next_floor_in_direction(const Elevator& e, const Direction dir) {
     int next_floor = -1;
-    for (int i = e.current_floor;
-        dir == Direction::Up ? i <= e.max_floor : i >= e.min_floor;
-        dir == Direction::Up ? i++ : i--) {
-        if (e.is_floor_called(i)) {
-            next_floor = i;
-            break;
+    // don't count current floor as next floor if called again
+    if (dir == Direction::Up) {
+        for (int i = e.current_floor + 1; i <= e.max_floor; i++) {
+            if (e.is_floor_called(i)) {
+                next_floor = i;
+                break;
+            }
         }
     }
+    else {
+        for (int i = e.current_floor - 1; i >= e.min_floor; i--) {
+            if (e.is_floor_called(i)) {
+                next_floor = i;
+                break;
+            }
+        }
+    }
+    
     return next_floor;
 }
 
@@ -62,6 +72,10 @@ void Elevator::single_scan(Elevator& e) {
     if (next_floor == -1) {
         if (e.current_floor == (e.move_dir == Direction::Down ? e.min_floor : e.max_floor)) {
             next_floor = find_next_floor_in_direction(e, -e.move_dir);
+        }
+        // otherwise just set the next floor to the limits and start moving to them
+        else {
+            next_floor = e.move_dir == Direction::Up ? e.max_floor : e.min_floor;
         }
     }
 

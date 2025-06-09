@@ -17,39 +17,6 @@ void Scene::update(float delta_time) {
     this->delta_time = delta_time;
     this->total_time += delta_time;
 
-    if (elevator_timer_enabled) {
-        elevator.stop_timer = std::max(0.0f, elevator.stop_timer - delta_time);
-    }
-
-    if (elevator.next_floor > elevator.current_floor) {
-        elevator.move_dir = Direction::Up;
-    }
-    else if (elevator.next_floor < elevator.current_floor) {
-        elevator.move_dir = Direction::Down;
-    }
-
-    if (!elevator.is_stopped()) {
-        if (elevator.next_floor != elevator.current_floor) {
-            // move
-            if (elevator.move_dir == Direction::Up) {
-                elevator.y_position += (delta_time * elevator.move_speed);
-                elevator.current_floor = static_cast<int>(std::floor(elevator.y_position));
-            }
-            else {
-                elevator.y_position -= (delta_time * elevator.move_speed);
-                elevator.current_floor = static_cast<int>(std::ceil(elevator.y_position));
-            }
-        }
-        else {
-            elevator.set_stopped(true);
-            // snap the y_position to the stopped floor
-            elevator.y_position = static_cast<float>(elevator.current_floor);
-        }
-    }
-    else {
-        elevator.call_floor(elevator.current_floor, false);
-    }
-
     // run the algorithm selected
     switch (active_algorithm) {
     case 0: {
@@ -64,6 +31,49 @@ void Scene::update(float delta_time) {
         Elevator::single_scan(elevator);
         break;
     }
+    }
+
+    if (elevator_timer_enabled) {
+        elevator.stop_timer = std::max(0.0f, elevator.stop_timer - delta_time);
+    }
+
+    if (!elevator.is_stopped()) {
+        if (elevator.next_floor > elevator.current_floor) {
+            elevator.move_dir = Direction::Up;
+        }
+        else if (elevator.next_floor < elevator.current_floor) {
+            elevator.move_dir = Direction::Down;
+        }
+        if (elevator.next_floor != elevator.current_floor) {
+            // move
+            if (elevator.move_dir == Direction::Up) {
+                elevator.y_position += (delta_time * elevator.move_speed);
+                elevator.current_floor = static_cast<int>(std::floor(elevator.y_position));
+            }
+            else {
+                elevator.y_position -= (delta_time * elevator.move_speed);
+                elevator.current_floor = static_cast<int>(std::ceil(elevator.y_position));
+            }
+        }
+        if (elevator.next_floor == elevator.current_floor) {
+            elevator.set_stopped(true);
+        }
+    }
+    else {
+        // if no queued floors, reset the timer
+        if (elevator.next_floor == elevator.current_floor) {
+            elevator.set_stopped(true);
+        }
+
+        // if we do have a queued floor but the elevator is called at its current floor, reset the timer
+        if (elevator.is_floor_called(elevator.current_floor)) {
+            elevator.set_stopped(true);
+        }
+
+        // snap the y_position to the stopped floor
+        elevator.y_position = static_cast<float>(elevator.current_floor);
+
+        elevator.call_floor(elevator.current_floor, false);
     }
 }
 
