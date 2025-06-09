@@ -2,28 +2,45 @@
 #include <cstddef>
 #include <vector>
 
-enum class direction {
-    up,
-    down
+enum class Direction {
+    Up,
+    Down
 };
 
-struct elevator {
-    const int min_floor = 0;
+Direction operator-(Direction& d);
+
+struct Elevator {
+    // elevator dimensions
+    const int min_floor = 1;
     const int max_floor;
-    int current_floor = 0;
-    bool stopped = true;
-    direction move_dir = direction::up;
+
+    // things the algorithm needs to work
+    int current_floor = min_floor;
+    int next_floor = min_floor;
+    Direction move_dir = Direction::Up;
     std::vector<bool> floors_called;
 
-    elevator(int N) : max_floor{N - 1}, floors_called(N, false) { }
+    // other internals for the purposes of a nice simulation
+    float stop_timer = 0.0f;
+    float stop_duration = 2.0f;
+    float y_position = 1.0f; // actual position of the elevator car
+    float move_speed = 4.0f;
 
-    bool call_floor(int floor);
-    bool move_to_floor(int floor);
+    // ctor
+    Elevator(int N) : max_floor{N}, floors_called(N, false) { }
+
+    // helper functions
+    bool call_floor(int floor, bool state = true);
+    bool is_floor_called(int floor) const;
+    bool is_stopped() const;
+    void set_stopped(bool state);
+
+    static void single_scan(Elevator& e);
+    static void single_look(Elevator& e);
+
+    // if this were a disk i might do these, but it's an elevator!
+    //static void single_cscan(Elevator& e);
+    //static void single_clook(Elevator& e);
 };
-
-void single_scan(elevator& e);
-void single_look(elevator& e);
-void single_cscan(elevator& e);
-void single_clook(elevator& e);
 
 

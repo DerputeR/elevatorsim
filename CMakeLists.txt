@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.21...3.31)
+cmake_minimum_required(VERSION 3.31...4.0)
 
 project(ElevatorSimProject  VERSION 0.1.0
                             DESCRIPTION "Simulates a single-carriage elevator system"
@@ -17,7 +17,7 @@ include(FetchContent)
 FetchContent_Declare(
     imgui            
     GIT_REPOSITORY  https://github.com/ocornut/imgui
-    GIT_TAG         v1.91.7-docking
+    GIT_TAG         v1.91.9b-docking
 )
 FetchContent_Declare(
     glm            
@@ -34,11 +34,17 @@ set(IMGUI_SOURCES "${imgui_SOURCE_DIR}/imgui.cpp"
                   "${imgui_SOURCE_DIR}/imgui_draw.cpp"
                   "${imgui_SOURCE_DIR}/imgui_tables.cpp"
                   "${imgui_SOURCE_DIR}/imgui_widgets.cpp"
+                  "${imgui_SOURCE_DIR}/misc/cpp/imgui_stdlib.cpp"
 )
 
 # We will also need to do so for the backend sources
 set(IMGUI_BACKEND_SOURCES "${imgui_SOURCE_DIR}/backends/imgui_impl_sdl3.cpp"
-                          "${imgui_SOURCE_DIR}/backends/imgui_impl_opengl3.cpp"
+                          "${imgui_SOURCE_DIR}/backends/imgui_impl_sdlrenderer3.cpp"
+)
+
+# This is recommended for debugging in VS
+set(IMGUI_DEBUG "${imgui_SOURCE_DIR}/misc/debuggers/imgui.natvis"
+                "${imgui_SOURCE_DIR}/misc/debuggers/imgui.natstepfilter"
 )
 
 
@@ -65,7 +71,7 @@ else()
     FetchContent_Declare(
         SDL3
         GIT_REPOSITORY  https://github.com/libsdl-org/SDL
-        GIT_TAG         release-3.2.2
+        GIT_TAG         release-3.2.16
     )
     FetchContent_MakeAvailable(SDL3)
 endif()
@@ -78,6 +84,7 @@ set(ENGINE_SOURCES "src/engine/shader_loader.cpp" "src/engine/engine.cpp")
 # we'll need to include the sources here.
 add_executable(ElevatorSim "src/main.cpp"
                            "src/elevator.cpp"
+                           "src/scene.cpp"
                            "glad/src/glad.c"
                            ${IMGUI_SOURCES}
                            ${IMGUI_BACKEND_SOURCES}
@@ -88,30 +95,72 @@ add_executable(ElevatorSim "src/main.cpp"
 if (MSVC AND WIN32 AND NOT MSVC_VERSION VERSION_LESS 142)
     target_link_options(ElevatorSim PRIVATE $<$<CONFIG:Debug>:/INCREMENTAL>)
     target_compile_options(ElevatorSim PRIVATE $<$<CONFIG:Debug>:/ZI>)
+    target_sources(ElevatorSim PRIVATE $<$<CONFIG:Debug>:${IMGUI_DEBUG}>)
+    target_compile_definitions(ElevatorSim PRIVATE $<$<CONFIG:Debug>:DEBUG>)
 endif()
 
 # Link to the actual SDL3 library.
 target_link_libraries(ElevatorSim PRIVATE SDL3::SDL3)
-target_compile_features(ElevatorSim PUBLIC cxx_std_17)
+target_compile_features(ElevatorSim PUBLIC cxx_std_23)
 set_target_properties(ElevatorSim PROPERTIES CXX_EXTENSIONS OFF)
-
-# Ensure the library is installed with the executable
-if (TARGET SDL3-shared)
-    install(TARGETS SDL3-shared
-            RUNTIME DESTINATION 
-            LIBRARY DESTINATION "lib"
-            ARCHIVE DESTINATION "lib/${PROJECT_NAME}")
-endif()
-
 
 # Pick up the includes for our dependencies
 target_include_directories(ElevatorSim PRIVATE "${sdl3_SOURCE_DIR}/include")
 target_include_directories(ElevatorSim PRIVATE "${imgui_SOURCE_DIR}")
+target_include_directories(ElevatorSim PRIVATE "${imgui_SOURCE_DIR}/backends")
+target_include_directories(ElevatorSim PRIVATE "${imgui_SOURCE_DIR}/misc/cpp")
 target_include_directories(ElevatorSim PRIVATE "glm")
 target_include_directories(ElevatorSim PRIVATE "glad/include")
 
 # Link to the library (GLM becomes a static library in this case)
 target_link_libraries(ElevatorSim PRIVATE glm)
 
-# Ensure the executable is also placed in bin
-install(TARGETS ElevatorSim RUNTIME DESTINATION "bin")
+# Installation rules
+include(GNUInstallDirs)
+# include(InstallRequiredSystemLibraries)
+install(TARGETS
+            ElevatorSim
+        RUNTIME
+            DESTINATION ${CMAKE_INSTALL_BINDIR}
+        LIBRARY
+            DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        ARCHIVE
+            DESTINATION ${CMAKE_INSTALL_LIBDIR}
+)
+
+if (TARGET SDL3-shared)
+    message("Configuring SDL-shared installation")
+    install(TARGETS
+                SDL3-shared
+        RUNTIME
+            DESTINATION ${CMAKE_INSTALL_BINDIR}
+        LIBRARY
+            DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        ARCHIVE
+            DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    )
+endif()
+
+if (TARGET SDL3-static)
+    message("Configuring SDL-static installation")
+    install(TARGETS
+                SDL3-static
+        RUNTIME
+            DESTINATION ${CMAKE_INSTALL_BINDIR}
+        LIBRARY
+            DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        ARCHIVE
+            DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    )
+endif()
+
+# RPATH mangling
+# TODO (figure out how we're meant to do installs on Linux)
+
+
+# The CMake docs have some examples:
+# https://cmake.org/cmake/help/latest/command/install.html#example-install-targets-with-per-artifact-components
+# https://cmake.org/cmake/help/latest/command/install.html#example-install-targets-to-per-config-destinations
+# install(TARGETS ElevatorSim
+#         CONFIGURATIONS Release
+#         RUNTIME DESTINATION "bin")
