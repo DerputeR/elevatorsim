@@ -7,9 +7,14 @@
 #include <imgui_internal.h>
 #include <format>
 
+constexpr float PI = std::numbers::pi_v<float>;
+
+static SDL_FRect cab_rect{0.0f, 0.0f, 64.0f, 96.0f};
+
 static float rpm = 60.0f;
 static bool elevator_timer_enabled = true;
-constexpr float PI = std::numbers::pi_v<float>;
+static int active_algorithm = 0;
+static const char* algorithms[] = { "Manual", "LOOK", "SCAN" };
 
 void Scene::update(float delta_time) {
     this->delta_time = delta_time;
@@ -24,6 +29,43 @@ void Scene::update(float delta_time) {
     }
     else if (elevator.next_floor < elevator.current_floor) {
         elevator.move_dir = Direction::Down;
+    }
+
+    if (!elevator.is_stopped()) {
+        if (elevator.next_floor != elevator.current_floor) {
+            // move
+            if (elevator.move_dir == Direction::Up) {
+                elevator.y_position += (delta_time * elevator.move_speed);
+            }
+            else {
+                elevator.y_position -= (delta_time * elevator.move_speed);
+            }
+            elevator.current_floor = static_cast<int>(elevator.y_position);
+        }
+        else {
+            elevator.set_stopped(true);
+            // snap the y_position to the stopped floor
+            elevator.y_position = static_cast<float>(elevator.current_floor);
+        }
+    }
+    else {
+        elevator.call_floor(elevator.current_floor, false);
+    }
+
+    // run the algorithm selected
+    switch (active_algorithm) {
+    case 0: {
+        // manual, do nothing
+        break;
+    }
+    case 1: {
+        Elevator::single_look(elevator);
+        break;
+    }
+    case 2: {
+        Elevator::single_scan(elevator);
+        break;
+    }
     }
 }
 
@@ -70,9 +112,11 @@ void Scene::draw_gui() {
 
         // elevator status
         ImGui::SeparatorText("Status");
+        ImGui::Text("Cab position: %f", elevator.y_position);
         ImGui::Text("Current floor: %d", elevator.current_floor);
         ImGui::Text("Next floor: %d", elevator.next_floor);
         ImGui::Text("Move direction: %s", elevator.move_dir == Direction::Up ? "Up" : "Down");
+        ImGui::Text("Stop timer %s", elevator_timer_enabled ? "enabled" : "disabled");
         ImGui::Text("Stop timer: %f", elevator.stop_timer);
         ImGui::Text("Stopped: %s", elevator.is_stopped() ? "true" : "false");
 
@@ -90,8 +134,6 @@ void Scene::draw_gui() {
 
         // backend controls
         ImGui::SeparatorText("Backend");
-        static int active_algorithm = 0;
-        static const char* algorithms[] = { "Manual", "LOOK", "SCAN" };
         ImGui::Combo("Algorithm", &active_algorithm, algorithms, 3);
         ImGui::DragFloat("Stop duration", &elevator.stop_duration, 0.1f, 0.0f, 10.0f, "%.1f");
 
@@ -130,6 +172,9 @@ void Scene::draw_gui() {
             if (ImGui::Button("Toggle start/stop")) {
                 elevator.set_stopped(!elevator.is_stopped());
             }
+        }
+        else {
+            elevator_timer_enabled = true;
         }
     }
 

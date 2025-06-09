@@ -30,18 +30,18 @@ struct Elevator {
     Elevator(int N) : max_floor{N}, floors_called(N, false) { }
 
     // helper functions
-    bool call_floor(int floor);
+    bool call_floor(int floor, bool state = true);
     bool is_floor_called(int floor) const;
     bool move_to_floor(int floor);
     bool is_stopped() const;
     void set_stopped(bool state);
+
+    static void single_scan(Elevator& e);
+    static void single_look(Elevator& e);
+
+    // if this were a disk i might do these, but it's an elevator!
+    //static void single_cscan(Elevator& e);
+    //static void single_clook(Elevator& e);
 };
-
-void single_scan(Elevator& e);
-void single_look(Elevator& e);
-
-// if this were a disk i might do these, but it's an elevator!
-//void single_cscan(Elevator& e);
-//void single_clook(Elevator& e);
 
 
